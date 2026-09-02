@@ -1,9 +1,11 @@
 import { AuthButton } from '@/components/auth/AuthButton';
 import { AuthInput } from '@/components/auth/AuthInput';
 import { AuthColors } from '@/constants/theme';
+import { useAuth } from '@/contexts/AuthContext';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -25,9 +27,31 @@ export default function SignupScreen() {
   const [repeatPassword, setRepeatPassword] = useState('');
   const [showRepeat, setShowRepeat] = useState(false);
   const [agreed, setAgreed] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { signUp } = useAuth();
 
-  const handleSignup = () => {
-    // TODO: wire up auth
+  const handleSignup = async () => {
+    if (!fullName || !email || !password || !repeatPassword) {
+      Alert.alert('Missing Fields', 'Please fill in all fields.');
+      return;
+    }
+    if (password !== repeatPassword) {
+      Alert.alert('Password Mismatch', 'Passwords do not match.');
+      return;
+    }
+    if (!agreed) {
+      Alert.alert(
+        'Terms Required',
+        'Please agree to the Terms & Conditions.'
+      );
+      return;
+    }
+    setLoading(true);
+    const success = await signUp(email.trim(), password, fullName.trim());
+    setLoading(false);
+    if (success) {
+      router.back();
+    }
   };
 
   return (
@@ -111,6 +135,7 @@ export default function SignupScreen() {
                 backgroundColor={AuthColors.accentGreen}
                 textColor={AuthColors.dark}
                 shadowColor={AuthColors.border}
+                loading={loading}
                 style={styles.signupBtn}
               />
             </View>

@@ -1,6 +1,7 @@
 import { AuthButton } from '@/components/auth/AuthButton';
 import { AuthInput } from '@/components/auth/AuthInput';
 import { AuthColors } from '@/constants/theme';
+import { useAuth } from '@/contexts/AuthContext';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useState } from 'react';
@@ -26,9 +27,14 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { signIn } = useAuth();
 
-  const handleLogin = () => {
-    // TODO: wire up auth
+  const handleLogin = async () => {
+    if (!email || !password) return;
+    setLoading(true);
+    await signIn(email.trim(), password);
+    setLoading(false);
   };
 
   return (
@@ -100,6 +106,7 @@ export default function LoginScreen() {
                   onPress={handleLogin}
                   backgroundColor={AuthColors.accentMagenta}
                   textColor="#FFFFFF"
+                  loading={loading}
                   style={styles.loginBtn}
                 />
               </View>

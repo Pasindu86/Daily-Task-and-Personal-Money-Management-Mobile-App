@@ -1,6 +1,21 @@
+import { useAuth } from '@/contexts/AuthContext';
 import { Redirect } from 'expo-router';
+import { ActivityIndicator, View } from 'react-native';
 
 export default function Index() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { session, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  if (session) {
+    return <Redirect href={'/(app)/home' as any} />;
+  }
+
   return <Redirect href={'/(auth)/login' as any} />;
 }

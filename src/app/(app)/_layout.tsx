@@ -1,19 +1,18 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { Redirect, Stack } from 'expo-router';
 
-export default function AuthLayout() {
+export default function AppLayout() {
   const { session, loading } = useAuth();
 
-  // If the user is already signed in, redirect out of auth screens
-  if (!loading && session) {
-    return <Redirect href={'/(app)/home' as any} />;
+  // If the user is not signed in, redirect back to login
+  if (!loading && !session) {
+    return <Redirect href={'/(auth)/login' as any} />;
   }
 
   return (
     <Stack
       screenOptions={{
         headerShown: false,
-        animation: 'slide_from_right',
       }}
     />
   );
